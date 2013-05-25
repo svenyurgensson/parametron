@@ -9,18 +9,25 @@ module Parametron
 
   module ClassMethods
     attr_reader :params_validator
-    def params(strict=false, &block)
+    def params_for(method_name, opts={}, &block)
       instance_eval do
-        @params_validator = Parametron::ParamsValidator.new(strict)
+        @_method_name     = method_name.to_sym
+        @params_validator = Parametron::ParamsValidator.new(opts)
         @params_validator.instance_eval(&block)
       end
     end
-  end
 
-  def fetch params
-    _validate!(_set_defaults!(params))
+    def method_added(name)
+      return if name != @_method_name or instance_variable_get(:"@_METHOD_#{name}_WRAPPED")
+      instance_variable_set(:"@_METHOD_#{name}_WRAPPED", true)
+      original = instance_method(name.to_sym)
+      remove_method(name.to_sym)
+      define_method(name) do |params|
+        new_params = _validate!(_set_defaults!(params))
+        original.bind(self).call(new_params)
+      end
+    end
   end
-
 
   private
   def _set_defaults!(params)
@@ -53,4 +60,4 @@ module Parametron
 
 end
 
-require './parametron/params_validator'
+require 'parametron/params_validator'

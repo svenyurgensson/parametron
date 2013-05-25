@@ -8,7 +8,7 @@ describe Parametron do
         expect do
           class Victim
             include Parametron
-            params do; end
+            params_for(:_) do; end
           end
         end.not_to raise_error
       end
@@ -19,7 +19,7 @@ describe Parametron do
         expect do
           class Victim
             include Parametron
-            params do
+            params_for(:_) do
               optional :city, default: ''
             end
           end
@@ -30,7 +30,7 @@ describe Parametron do
         expect do
           class Victim
             include Parametron
-            params do
+            params_for(:_) do
               optional :city, default: '', validator: /\d+/
             end
           end
@@ -40,7 +40,7 @@ describe Parametron do
       it 'store params validator' do
         class Victim
           include Parametron
-          params do
+          params_for(:_) do
             optional :city, default: '', validator: /\d+/
           end
         end
@@ -57,7 +57,7 @@ describe Parametron do
         expect do
           class Victim
             include Parametron
-            params do
+            params_for(:_) do
               required :city, default: ''
             end
           end
@@ -68,7 +68,7 @@ describe Parametron do
         expect do
           class Victim
             include Parametron
-            params do
+            params_for(:_) do
               required :city, default: '', validator: /\d+/
             end
           end
@@ -78,7 +78,7 @@ describe Parametron do
       it 'store params validator' do
         class Victim
           include Parametron
-          params do
+          params_for(:_) do
             required :city, default: '', validator: /\d+/
           end
         end
@@ -93,34 +93,28 @@ describe Parametron do
     context '.validate' do
       class VictimStrict
         include Parametron
-        params(true) do
+        params_for(:fetch, strict: true) do
           required :city,  validator: /\w+/
           required :year,  validator: /\d+/, default: 2012
           optional :title, validator: /\w+/
           optional :other, default: 'staff'
         end
         def fetch params
-          super
         end
       end
       class VictimRelaxed
         include Parametron
-        params do
+        params_for(:fetch) do
           required :city,  validator: /\w+/
           required :year,  validator: /\d+/, default: 2012
           optional :title, validator: /\w+/
           optional :other, default: 'staff'
         end
         def fetch params
-          super
         end
       end
 
       subject{ VictimStrict.new }
-
-      it 'respond to fetch' do
-        should respond_to(:fetch)
-      end
 
       it 'accepts valid params' do
         expect do
@@ -163,7 +157,7 @@ describe Parametron do
     context 'setting defaults for parameters' do
       class VictimWithDef
         include Parametron
-        params(true) do
+        params_for(:fetch, strict: true) do
           required :city,  validator: /\w+/
           required :year,  validator: /\d+/, default: '2012'
           optional :title, validator: /\w+/
@@ -172,7 +166,6 @@ describe Parametron do
         attr_reader :city, :year, :title, :other
 
         def fetch params
-          params = super
           @city = params[:city]
           @year = params[:year]
           @title= params[:title]

@@ -2,8 +2,8 @@ class Parametron::ParamsValidator
 
   attr_accessor :required_vals, :optional_vals
 
-  def initialize(strict = false)
-    @raise_on_excess = strict
+  def initialize(opts)
+    @raise_on_excess = opts.fetch(:strict, false)
     self.required_vals = []
     self.optional_vals = []
   end

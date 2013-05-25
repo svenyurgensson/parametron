@@ -1,6 +1,6 @@
 # Parametron
 
-TODO: Write a gem description
+This simple library implements DSL for validating method input parameters
 
 ## Installation
 
@@ -18,7 +18,26 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+
+    class VictimStrict
+        include Parametron
+
+        params_for(:fetch, strict: true) do
+          required :city,   validator: /\w+/
+          required :year,   validator: /\d{4}/
+          optional :title,  validator: ->(str){ str != "Moscow" }
+          optional :number, validator: /\d+/, default: 42
+        end
+
+        def fetch params
+          # .. do something useful
+        end
+      end
+
+See `spec/parametron_spec` how this library suppossed to work.
+All hackers do it and you should do!
+
 
 ## Contributing
 

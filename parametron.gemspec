@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Parametron::VERSION
   spec.authors       = ["Yury Batenko"]
   spec.email         = ["jurbat@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{DSL for method arguments validation}
+  spec.summary       = %q{DSL for method arguments validation}
   spec.homepage      = "http://github.com/svenyurgensson/parametron"
   spec.license       = "MIT"
 
