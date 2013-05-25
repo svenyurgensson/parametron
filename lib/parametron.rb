@@ -34,7 +34,12 @@ module Parametron
     new_par = params.dup
     _validators_list.each do |v|
       if new_par[v.name].nil? && new_par[v.name.to_sym].nil?
-        new_par[v.name.to_sym] = v.default if v.default
+        case v.default
+        when nil  then next
+        when Proc then new_par[v.name.to_sym] = v.default.call(self)
+        else
+          new_par[v.name.to_sym] = v.default
+        end
       end
     end
     new_par

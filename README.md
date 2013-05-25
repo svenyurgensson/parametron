@@ -28,6 +28,7 @@ Or install it yourself as:
           required :year,   validator: /\d{4}/
           optional :title,  validator: ->(str){ str != "Moscow" }
           optional :number, validator: /\d+/, default: 42
+          optional :gears,  default: ->(obj){ choose_by(obj) }
         end
 
         def fetch params
