@@ -36,7 +36,7 @@ Or install it yourself as:
       end
 
 See `spec/parametron_spec` how this library suppossed to work.
-All hackers do it and you should do!
+All hackers do this and you should too!
 
 
 ## Contributing
