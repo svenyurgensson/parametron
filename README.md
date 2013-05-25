@@ -34,6 +34,7 @@ Or install it yourself as:
           # .. do something useful
         end
       end
+```
 
 See `spec/parametron_spec` how this library suppossed to work.
 All hackers do this and you should too!
