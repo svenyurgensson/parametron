@@ -27,13 +27,22 @@ module Parametron
       original = instance_method(name.to_sym)
       remove_method(name.to_sym)
       define_method(name) do |params|
-        new_params = _validate!(_set_defaults!(params))
+        new_params = _rename_params!(_validate!(_set_defaults!(params)))
         original.bind(self).call(new_params)
       end
     end
   end
 
   private
+  def _rename_params!(params)
+    new_par = params.dup
+    _validators_list.each do |v|
+      next unless v.as
+      new_par[v.as] = new_par.delete(v.name.to_sym) || new_par.delete(v.name.to_str)
+    end
+    new_par
+  end
+
   def _set_defaults!(params)
     new_par = params.dup
     _validators_list.each do |v|

@@ -29,6 +29,7 @@ Or install it yourself as:
           optional :title,  validator: ->(str){ str != "Moscow" }
           optional :number, validator: /\d+/, default: 42
           optional :gears,  default: ->(obj){ choose_by(obj) }
+          optional :weel_d, as: :weel_diameter
         end
 
         def fetch params

@@ -12,7 +12,7 @@ class Parametron::ParamsValidator
   def optional(name, opts={})
     default   = opts.delete(:default)
     validator = opts.delete(:validator)
-    as        =  opts.delete(:as)
+    as        = opts.delete(:as)
     raise Parametron::ErrorMethodParams.new("Not available param: #{opts.inspect}") unless opts.empty?
     self.optional_vals << OptionalParameter.new(name.to_s, default, validator, as)
   end
@@ -73,6 +73,13 @@ class Parametron::ParamsValidator
   end
 
   class GenericParameter < Struct.new(:name, :default, :validator, :as)
+    def initialize(name, default, validator, as)
+      super
+      unless as.nil? || String===as || Symbol===as
+        raise ArgumentError.new("Parameter :as should be either String or Symbol!")
+      end
+    end
+
     def valid?(value)
       case self.validator
       when Regexp then value && !!self.validator.match(value.to_s)
