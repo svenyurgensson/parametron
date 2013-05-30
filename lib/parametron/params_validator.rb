@@ -3,7 +3,8 @@ class Parametron::ParamsValidator
   attr_accessor :required_vals, :optional_vals
 
   def initialize(opts)
-    @raise_on_excess = opts.fetch(:strict, false)
+    @reject_unexpected = opts.fetch(:reject, true)
+    @raise_on_excess   = opts.fetch(:strict, false)
     self.required_vals = []
     self.optional_vals = []
   end
@@ -11,15 +12,17 @@ class Parametron::ParamsValidator
   def optional(name, opts={})
     default   = opts.delete(:default)
     validator = opts.delete(:validator)
+    as        =  opts.delete(:as)
     raise Parametron::ErrorMethodParams.new("Not available param: #{opts.inspect}") unless opts.empty?
-    self.optional_vals << OptionalParameter.new(name.to_s, default, validator)
+    self.optional_vals << OptionalParameter.new(name.to_s, default, validator, as)
   end
 
   def required(name, opts={})
     default   = opts.delete(:default)
     validator = opts.delete(:validator)
+    as        = opts.delete(:as)
     raise Parametron::ErrorMethodParams.new("Not available param: #{opts.inspect}") unless opts.empty?
-    self.required_vals << RequiredParameter.new(name.to_s, default, validator)
+    self.required_vals << RequiredParameter.new(name.to_s, default, validator, as)
   end
 
   def validate!(obj, params)
@@ -42,7 +45,10 @@ class Parametron::ParamsValidator
 
     params.each do |k, v|
       key = k.to_s
-      next unless valid_keys.include?(key)
+      unless valid_keys.include?(key)
+        params.delete(key) if @reject_unexpected
+        next
+      end
       validators.find{|val| val.name == key}.tap do |curr_val|
         unless curr_val.valid?(v)
           obj.validation_error_cause << [key, v]
@@ -66,11 +72,11 @@ class Parametron::ParamsValidator
     self.required_vals.map{|x| x.name.to_s}
   end
 
-  class GenericParameter < Struct.new(:name, :default, :validator)
+  class GenericParameter < Struct.new(:name, :default, :validator, :as)
     def valid?(value)
       case self.validator
       when Regexp then value && !!self.validator.match(value.to_s)
-      when Proc then value && !!self.validator(value).call
+      when Proc   then value && !!self.validator(value).call
       else
         true
       end

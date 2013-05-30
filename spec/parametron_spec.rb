@@ -20,7 +20,7 @@ describe Parametron do
           class Victim
             include Parametron
             params_for(:_) do
-              optional :city, default: ''
+              optional :city, default: 'Krasnoyarsk'
             end
           end
         end.not_to raise_error
@@ -32,6 +32,17 @@ describe Parametron do
             include Parametron
             params_for(:_) do
               optional :city, default: '', validator: /\d+/
+            end
+          end
+        end.not_to raise_error
+      end
+
+      it 'accepts rename :as params' do
+        expect do
+          class Victim
+            include Parametron
+            params_for(:_) do
+              optional :city, default: '', validator: /\d+/, as: :capital
             end
           end
         end.not_to raise_error
@@ -114,6 +125,22 @@ describe Parametron do
         end
       end
 
+      it 'reject unexpected params' do
+        class Victim
+          include Parametron
+          params_for(:fetch) do
+            optional :city, default: 'Krasnoyarsk'
+          end
+          def fetch(params);  params ; end
+        end
+        v = Victim.new
+        expect do
+          v.fetch({'_'=>'Not needed'})
+        end.not_to raise_error
+        res = v.fetch({'_'=>'Not needed'})
+        res.should_not have_key('_')
+      end
+
       subject{ VictimStrict.new }
 
       it 'accepts valid params' do
@@ -129,6 +156,11 @@ describe Parametron do
         subject.validation_error_cause.should eql [["city"]]
       end
 
+      it 'raise error on unknown param' do
+        expect do
+          subject.fetch({city: 'Moskow', year: '1917', title: 'Nothing', other: 'Not need', '_' => 22})
+        end.to raise_error(Parametron::ExcessParameter)
+      end
 
       context "when strict" do
         subject{ VictimStrict.new }
@@ -202,6 +234,25 @@ describe Parametron do
       end
     end
 
+    context 'renames the keys' do
+      class VictimWithDef
+        include Parametron
+        params_for(:fetch, strict: true) do
+          required :year,  validator: /\d+/, default: '2012', as: :last_year
+        end
+        attr_reader :city, :year, :title, :other
+
+        def fetch params
+          @year = params[:last_year]
+        end
+      end
+
+      it 'renames parameter key' do
+
+
+      end
+
+    end
 
   end # context Params
 

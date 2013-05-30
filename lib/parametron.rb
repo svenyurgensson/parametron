@@ -9,6 +9,10 @@ module Parametron
 
   module ClassMethods
     attr_reader :params_validator
+    # Declare known parameter keys
+    # opts [Hash]
+    #     :strict => false ; Raise exception on unknown key
+    #     :reject => true  ; Reject unknown keys
     def params_for(method_name, opts={}, &block)
       instance_eval do
         @_method_name     = method_name.to_sym
