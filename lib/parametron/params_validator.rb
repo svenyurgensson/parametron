@@ -83,7 +83,7 @@ class Parametron::ParamsValidator
     def valid?(value)
       case self.validator
       when Regexp then value && !!self.validator.match(value.to_s)
-      when Proc   then value && !!self.validator(value).call
+      when Proc   then value && !!self.validator.call(value)
       else
         true
       end
