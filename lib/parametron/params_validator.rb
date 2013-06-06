@@ -69,7 +69,7 @@ class Parametron::ParamsValidator
   end
 
   def required_keys
-    self.required_vals.map{|x| x.name.to_s}
+    self.required_vals.map{|x| x.name.to_s}.sort
   end
 
   class GenericParameter < Struct.new(:name, :default, :validator, :as)
