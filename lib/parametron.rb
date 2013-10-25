@@ -49,7 +49,13 @@ module Parametron
       if new_par[v.name].nil? && new_par[v.name.to_sym].nil?
         case v.default
         when nil  then next
-        when Proc then new_par[v.name.to_sym] = v.default.call(self)
+        when Proc
+          case v.default.arity
+          when 0 then new_par[v.name.to_sym] = v.default.call()
+          when 1 then new_par[v.name.to_sym] = v.default.call(self)
+          else
+            raise ArgumentError.new "Too much arguments for #{v.name} default lambda"
+          end
         else
           new_par[v.name.to_sym] = v.default
         end
