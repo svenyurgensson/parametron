@@ -26,7 +26,7 @@ module Parametron
       instance_variable_set(:"@_METHOD_#{name}_WRAPPED", true)
       original = instance_method(name.to_sym)
       remove_method(name.to_sym)
-      define_method(name) do |params|
+      define_method(name) do |params={}|
         new_params = _rename_params!(_validate!(_set_defaults!(params)))
         original.bind(self).call(new_params)
       end
