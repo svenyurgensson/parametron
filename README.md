@@ -1,6 +1,6 @@
 # Parametron
 
-This simple library implements DSL for validating method input parameters
+This simple library implements DSL for validating and type casting input parameters for method.
 
 ## Installation
 

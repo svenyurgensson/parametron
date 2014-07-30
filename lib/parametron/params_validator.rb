@@ -13,22 +13,27 @@ class Parametron::ParamsValidator
     default   = opts.delete(:default)
     validator = opts.delete(:validator)
     as        = opts.delete(:as)
+    cast      = opts.delete(:cast)
+
     raise Parametron::ErrorMethodParams.new("Not available param: #{opts.inspect}") unless opts.empty?
-    self.optional_vals << OptionalParameter.new(name.to_s, default, validator, as)
+    self.optional_vals << OptionalParameter.new(name.to_s, default, validator, as, cast)
   end
 
   def required(name, opts={})
     default   = opts.delete(:default)
     validator = opts.delete(:validator)
     as        = opts.delete(:as)
+    cast      = opts.delete(:cast)
+
     raise Parametron::ErrorMethodParams.new("Not available param: #{opts.inspect}") unless opts.empty?
-    self.required_vals << RequiredParameter.new(name.to_s, default, validator, as)
+    self.required_vals << RequiredParameter.new(name.to_s, default, validator, as, cast)
   end
 
   def validate!(obj, params)
     obj.validation_error_cause = []
     normalized_param_keys = params.keys.map(&:to_s).sort
     exceed_params = normalized_param_keys - valid_keys
+
     if exceed_params.any?
       exceed_params.each do |par|
         obj.validation_error_cause << [par, params[par.to_sym]]
@@ -72,10 +77,10 @@ class Parametron::ParamsValidator
     self.required_vals.map{|x| x.name.to_s}.sort
   end
 
-  class GenericParameter < Struct.new(:name, :default, :validator, :as)
-    def initialize(name, default, validator, as)
+  class GenericParameter < Struct.new(:name, :default, :validator, :as, :cast)
+    def initialize(name, default, validator, as, cast)
       super
-      unless as.nil? || String===as || Symbol===as
+      unless as.nil? || String === as || Symbol === as
         raise ArgumentError.new("Parameter :as should be either String or Symbol!")
       end
     end
@@ -91,9 +96,15 @@ class Parametron::ParamsValidator
   end
 
   class OptionalParameter < GenericParameter
+    def required?
+      false
+    end
   end
 
   class RequiredParameter < GenericParameter
+    def required?
+      true
+    end
   end
 
 

@@ -27,13 +27,32 @@ module Parametron
       original = instance_method(name.to_sym)
       remove_method(name.to_sym)
       define_method(name) do |params={}|
-        new_params = _rename_params!(_validate!(_set_defaults!(params)))
+        new_params = _rename_params!(_cast!(_validate!(_set_defaults!(params))))
         original.bind(self).call(new_params)
       end
     end
   end
 
   private
+  def _cast!(params)
+    new_par = params.dup
+    _validators_list.each do |v|
+      next unless v.cast
+      key = v.name.to_sym
+      val = new_par[key]
+      next if val.nil? and not v.required?
+      new_par[key] =
+        case
+        when v.cast.to_s == "Integer" then Integer(val)
+        when v.cast.to_s == "Float"   then Float(val)
+        when Proc === v.cast          then v.cast.call(val)
+        else
+          raise MalformedParams.new("Unknown cast type: '#{v.cast.inspect}'")
+        end
+    end
+    new_par
+  end
+
   def _rename_params!(params)
     new_par = params.dup
     _validators_list.each do |v|

@@ -125,14 +125,14 @@ describe Parametron do
     end
 
     it 'reject unexpected params' do
-      class Victim
+      class VictimUP
         include Parametron
         params_for(:fetch) do
           optional :city, default: 'Krasnoyarsk'
         end
         def fetch(params);  params ; end
       end
-      v = Victim.new
+      v = VictimUP.new
       expect do
         v.fetch({'_'=>'Not needed'})
       end.not_to raise_error
