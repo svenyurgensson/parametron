@@ -6,13 +6,13 @@ This simple library implements DSL for validating and type casting input paramet
 
 Add this line to your application's Gemfile:
 
-    gem 'parametron'
+    gem 'parametron', '>= 0.3'
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Or install it as:
 
     $ gem install parametron
 
@@ -38,7 +38,7 @@ Or install it yourself as:
       end
 ```
 
-The main aim of this small gem is to implement base AOP (aspect oriented programming) to separate validation, conversion and setting defaults for methods from real businnes logic which should be the only important part of that method.
+The main aim of this small gem is to implement base AOP (aspect oriented programming) to separate validation, conversion and setting defaults for methods from real businnes logic which should be the only body of that method without validators, convertors, default setters overhead.
 
 In order to get this functionality you only need to include `Parametron` module into top of your class and after that describe desired incoming parameters for method.
 
@@ -54,11 +54,10 @@ In order to get this functionality you only need to include `Parametron` module 
 
 Class method `params_for` accepts one or two arguments: first is symbolized name of method of interest and second one (optional) is hash of two options:
 
-* `strict` which has default set to `false`
-* `reject` which has default set to `false` too
+* `strict` which is defaultly set to `false`
+* `reject` which is defaultly set to `false` too
 
 `strict` when set to `true` means that when you call your method and try to send unknown (not described) key - it raise error `Parametron::ExcessParameter`
-
 `reject` when set to `true` reject undescribed keys from method arguments
 
 ```ruby
@@ -95,7 +94,7 @@ Class method `params_for` accepts one or two arguments: first is symbolized name
     # => {one: '1'}
 ```
 
-Method `params_for` should hold description block where you describe required and optional parameters for given method:
+Method `params_for` should provide description block where you describe required and optional parameters for given method:
 
 ```ruby
     params_for(:fetch) do
@@ -110,14 +109,18 @@ Method `params_for` should hold description block where you describe required an
 ```
 
 When parameter is `required` it must present in argument hash.
-Instead, parameter described as `optional` might present but not must.
+Instead, parameter described as `optional` might present but don't must.
 
-All of that parameter desciptors can have such refinements:
+All of that parameter descriptors can have such refinements:
 
 * `validator` with `Regexp` or `proc` predicat to be sure that input parameter is valid
 * `cast` which could be one of: `Integer`, `Float`, `proc` to convert input parameter
 * `default` to set input parameter to its default value in case if it not presents
 * `as` to rename input parameter name to new one
+
+
+
+
 
 
 ## Contributing
