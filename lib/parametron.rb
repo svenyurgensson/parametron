@@ -25,7 +25,9 @@ module Parametron
       return if name != @_method_name or instance_variable_get(:"@_METHOD_#{name}_WRAPPED")
       instance_variable_set(:"@_METHOD_#{name}_WRAPPED", true)
       original = instance_method(name.to_sym)
+
       remove_method(name.to_sym)
+
       define_method(name) do |params={}|
         new_params = _rename_params!(_cast!(_validate!(_set_defaults!(params))))
         original.bind(self).call(new_params)

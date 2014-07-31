@@ -21,15 +21,16 @@ Or install it yourself as:
 ```ruby
 
     class VictimStrict
-        include Parametron
+        include Parametron # <- should be at the top of class/module
 
         params_for(:fetch, strict: true) do
           required :city,   validator: /\w+/
           required :year,   validator: /\d{4}/
-          optional :title,  validator: ->(str){ str != "Moscow" }
+          optional :title,  validator: ->(str){ str != "Moscow" }, cast: ->(str){ str.upase }
           optional :number, validator: /\d+/, default: 42
           optional :gears,  default: ->(obj){ choose_by(obj) }
           optional :weel_d, as: :weel_diameter
+          optional :load,   cast: Float
         end
 
         def fetch params
@@ -38,8 +39,33 @@ Or install it yourself as:
       end
 ```
 
-See `spec/parametron_spec` how this library suppossed to work.
-All hackers do this and you should too!
+The main aim of this small gem is to implement base AOP (aspect oriented programming) to separate validation, conversion and setting defaults for methods from real businnes logic which should be the only important part of that method.
+
+In order to get this functionality you only need to include `Parametron` module into top of your class and after that describe desired incoming parameters for method.
+
+```
+    class VictimStrict
+        include Parametron # <- should be at the top of class/module
+
+        params_for(:fetch) do
+            ...
+        end
+    end
+```
+
+Class method `params_for` accepts one or two arguments: first is symbolized name of method of interest and second one (optional) is hash of two options:
+
+* `strict` which has default set to `false`
+* `reject` which has default set to `false` too
+
+`strict` when set to `true` means that when you call your method and try to send unknown (not described) key - it raise error `Parametron::ExcessParameter`
+
+`reject` when set to `true` reject undescribed keys from method arguments
+
+
+
+
+
 
 
 ## Contributing
