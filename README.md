@@ -1,5 +1,8 @@
 # Parametron
 
+[![Code Climate](https://codeclimate.com/github/svenyurgensson/parametron/badges/gpa.svg)](https://codeclimate.com/github/svenyurgensson/parametron)
+[![Test Coverage](https://codeclimate.com/github/svenyurgensson/parametron/badges/coverage.svg)](https://codeclimate.com/github/svenyurgensson/parametron/coverage)
+
 This simple library implements DSL for validating and type casting input parameters for method.
 
 ## Installation
