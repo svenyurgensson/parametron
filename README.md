@@ -122,8 +122,13 @@ All of that parameter descriptors can have such refinements:
 * `as` to rename input parameter name to new one
 
 
-
-
+When `cast` options is a lambda/proc you could have current input hash and (if need)
+original input hash. It is depends of arity of lambda you provide.
+If your `cast` lambda arity is 1 then it receive current value to cast; when its arity is 2
+then it receive |current_value, current_casted_parameters| and when its arity is 3
+it will get |current_value, current_casted_parameters, original_params|
+This could be handy when you want to have access to other parameters from input hash already
+casted.
 
 
 ## Contributing

@@ -47,7 +47,13 @@ module Parametron
         case
         when v.cast.to_s == "Integer" then Integer(val)
         when v.cast.to_s == "Float"   then Float(val)
-        when Proc === v.cast          then v.cast.call(val)
+        when Proc === v.cast
+          case v.cast.arity
+          when 0 then v.cast.call()
+          when 1 then v.cast.call(val)
+          when 2 then v.cast.call(val, new_par)
+          else v.cast.call(val, new_par, params)
+          end
         else
           raise MalformedParams.new("Unknown cast type: '#{v.cast.inspect}'")
         end

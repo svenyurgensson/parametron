@@ -63,6 +63,21 @@ describe Parametron, "Casting" do
       res[:name].should == "USE PROC"
     end
 
+    it 'cast input value using proc and have access to already casted params' do
+      class VictimDoubleCast
+        include Parametron
+        params_for(:fetch) do
+          required :year,  cast: -> x { Integer(x) + 12 }
+          required :name,  cast: -> n, c { n.upcase + " #{c[:year]}"  }
+        end
+        def fetch(params); params; end
+      end
+
+      res = VictimDoubleCast.new.fetch(year: '1976', name: 'use proc')
+      res[:name].should == "USE PROC 1988"
+    end
+
+
     context "when params cannot be casted to given class" do
       it 'raises exception when not Integer' do
         class Victim3
