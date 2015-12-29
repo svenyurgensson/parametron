@@ -1,4 +1,8 @@
-0.3.5 / 2015-12-29
+0.4.0 / 2015-12-29
+==================
+ * Implement `on_exception` handler
+
+0.3.4 / 2015-12-28
 ==================
  * Implement call cast lambda with parameters
 

@@ -29,7 +29,15 @@ module Parametron
       remove_method(name.to_sym)
 
       define_method(name) do |params={}|
-        new_params = _rename_params!(_cast!(_validate!(_set_defaults!(params))))
+        begin
+          new_params = _rename_params!(_cast!(_validate!(_set_defaults!(params))))
+        rescue => e
+          if self.class.params_validator.on_exception_handler
+            return self.class.params_validator.on_exception_handler.call(e)
+          else
+            raise e
+          end
+        end
         original.bind(self).call(new_params)
       end
     end

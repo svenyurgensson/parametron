@@ -93,8 +93,6 @@ describe Parametron, "Casting" do
         end.to raise_error
       end
 
-
-
     end
 
     it 'not raises exception on casting when parameter not required' do

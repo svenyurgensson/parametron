@@ -130,6 +130,25 @@ it will get |current_value, current_casted_parameters, original_params|
 This could be handy when you want to have access to other parameters from input hash already
 casted.
 
+## Exceptions
+
+Normally `parametron` raise exceptions when mandatory required parameter missed,
+when `cast` expect something other than it gets and so on.
+You could change this behavior if you need adding exception handler:
+
+
+```ruby
+    params_for(:fetch) do
+      required :city,   validator: /\w+/
+      required :year,   validator: /\d{4}/
+      on_exception ->(ex) {
+        # return something other then exception `ex`
+        return false
+      }
+    end
+```
+
+
 
 ## Contributing
 

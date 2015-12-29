@@ -1,12 +1,18 @@
 class Parametron::ParamsValidator
 
-  attr_accessor :required_vals, :optional_vals
+  attr_accessor :required_vals, :optional_vals, :on_exception_handler
 
   def initialize(opts)
     @reject_unexpected = opts.fetch(:reject, true)
     @raise_on_excess   = opts.fetch(:strict, false)
     self.required_vals = []
     self.optional_vals = []
+    self.on_exception_handler  = nil
+  end
+
+  def on_exception(lmbd)
+    raise ArgumentError.new('on_exception expects lambda or proc') unless lmbd.respond_to? :call
+    self.on_exception_handler = lmbd
   end
 
   def optional(name, opts={})
