@@ -16,22 +16,30 @@ class Parametron::ParamsValidator
   end
 
   def optional(name, opts={})
-    default   = opts.delete(:default)
-    validator = opts.delete(:validator)
-    as        = opts.delete(:as)
-    cast      = opts.delete(:cast)
+    default   = opts[:default]
+    validator = opts[:validator]
+    as        = opts[:as]
+    cast      = opts[:cast]
 
-    raise Parametron::ErrorMethodParams.new("Not available param: #{opts.inspect}") unless opts.empty?
+    diff = opts.keys - [:default, :validator, :as, :cast]
+    unless diff.empty?
+      wrong_opts = diff.inject({}) {|acc, x| acc[x] = opts[x] }
+      fail Parametron::ErrorMethodParams, "Unknown param given: #{wrong_opts}"
+    end
     self.optional_vals << OptionalParameter.new(name.to_s, default, validator, as, cast)
   end
 
   def required(name, opts={})
-    default   = opts.delete(:default)
-    validator = opts.delete(:validator)
-    as        = opts.delete(:as)
-    cast      = opts.delete(:cast)
+    default   = opts[:default]
+    validator = opts[:validator]
+    as        = opts[:as]
+    cast      = opts[:cast]
 
-    raise Parametron::ErrorMethodParams.new("Not available param: #{opts.inspect}") unless opts.empty?
+    diff = opts.keys - [:default, :validator, :as, :cast]
+    unless diff.empty?
+      wrong_opts = diff.inject({}) {|acc, x| acc[x] = opts[x] }
+      fail Parametron::ErrorMethodParams, "Unknown param given: #{wrong_opts}"
+    end
     self.required_vals << RequiredParameter.new(name.to_s, default, validator, as, cast)
   end
 
@@ -60,34 +68,34 @@ class Parametron::ParamsValidator
         params.delete(key) if @reject_unexpected
         next
       end
-      validators.find{|val| val.name == key}.tap do |curr_val|
+      validators.find {|val| val.name == key }.tap do |curr_val|
         unless curr_val.valid?(v)
           obj.validation_error_cause << [key, v]
-          raise Parametron::MalformedParams.new(key)
+          fail Parametron::MalformedParams, key
         end
       end
     end
-
   end
 
   private
+
   def validators
     self.required_vals + self.optional_vals
   end
 
   def valid_keys
-    validators.map{|x| x.name.to_s}.sort
+    validators.map {|x| x.name.to_s }.sort
   end
 
   def required_keys
-    self.required_vals.map{|x| x.name.to_s}.sort
+    self.required_vals.map {|x| x.name.to_s }.sort
   end
 
   class GenericParameter < Struct.new(:name, :default, :validator, :as, :cast)
     def initialize(name, default, validator, as, cast)
       super
       unless as.nil? || String === as || Symbol === as
-        raise ArgumentError.new("Parameter :as should be either String or Symbol!")
+        fail ArgumentError, 'Parameter :as should be either String or Symbol!'
       end
     end
 

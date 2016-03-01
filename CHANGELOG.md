@@ -1,3 +1,7 @@
+0.5.0 / 2016-03-01
+==================
+ * Now all `params_for` options params are immutable
+
 0.4.0 / 2015-12-29
 ==================
  * Implement `on_exception` handler
